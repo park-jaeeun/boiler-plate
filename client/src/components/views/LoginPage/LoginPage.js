@@ -1,6 +1,12 @@
+import axios from 'axios'
+//import { response } from 'express'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import {loginUser} from '../../../_actions/user_action';
+import {withRouter} from 'react-router-dom';
 
-function LoginPage() {
+function LoginPage(props) {
+    const dispatch = useDispatch();
 
     const [Email, setEmail] = useState("")
     const [Password, setPassword] = useState("")
@@ -13,8 +19,25 @@ function LoginPage() {
         setPassword(event.currentTarget.value)
     }
 
-    const onSubmitHandler = () => {
+    const onSubmitHandler = (event) => {
+        event.preventDefault(); // 확인버튼 누를 때 페이지가 새로고침되는 것을 막기 위해서
+
+        let body = {
+            email: Email,
+            password: Password
+        }
+
+        dispatch(loginUser(body))
+            //login 한 후 시작페이지로 이동시키기.
+            .then(response => {
+                if (response.payload.loginSuccess) {
+                    props.history.push('/')
+                } else {
+                    alert('Error')
+                }
+            })
         
+
     }
 
     return (
@@ -39,4 +62,4 @@ function LoginPage() {
     )
 }
 
-export default LoginPage
+export default withRouter(LoginPage);
